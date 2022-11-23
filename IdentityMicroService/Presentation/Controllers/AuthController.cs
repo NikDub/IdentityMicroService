@@ -1,11 +1,8 @@
 ﻿using IdentityMicroService.Domain.Contracts;
-using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
 
 namespace IdentityMicroService.Presentation.Controllers
 {
@@ -47,6 +44,41 @@ namespace IdentityMicroService.Presentation.Controllers
             return View();
         }
 
+
+        [Route("[action]")]
+        public IActionResult SingUp(string ReturnUrl)
+        {
+            return View(new RegistrationUserDTO { ReturnUrl = ReturnUrl });
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> SingUp(RegistrationUserDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var user = await _authenticationManage.CreateUser(model);
+
+            if (user != null)
+            {
+                var (accessToken, refreshToken) = await _authenticationManage.GetTokensAsync(model);
+                return Redirect(model.ReturnUrl);
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> SingOut(string ReturnUrl)
+        {
+            await _authenticationManage.SignOut();
+            return Redirect("/Auth/Index");
+        }
+
         /// <summary>
         /// ONLY FOR TESTS
         /// </summary>
@@ -54,7 +86,7 @@ namespace IdentityMicroService.Presentation.Controllers
         [Authorize]
         [HttpGet]
         [Route("[action]")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }

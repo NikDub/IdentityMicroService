@@ -44,7 +44,7 @@ namespace IdentityMicroService
                     AllowAccessTokensViaBrowser = true,
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AccessTokenLifetime = 60 * 60 * 24,
-                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedGrantTypes = { "emailpassword", GrantType.ResourceOwnerPassword},
                     RequireClientSecret = false,
                     AllowOfflineAccess = true,
                     AllowedScopes =
@@ -59,7 +59,8 @@ namespace IdentityMicroService
             new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResources.Email(),
             };
     }
 }

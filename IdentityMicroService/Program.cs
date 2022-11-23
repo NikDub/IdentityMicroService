@@ -2,6 +2,7 @@ using IdentityMicroService.Domain.Contracts;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Infrastructure;
 using IdentityMicroService.Infrastructure.Repository;
+using IdentityMicroService.Presentation.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -25,7 +26,7 @@ namespace IdentityMicroService
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireLowercase = false;
                     options.Password.RequireUppercase = false;
-                    options.Password.RequiredLength = 4;
+                    options.Password.RequiredLength = 6;
                 })
                 .AddEntityFrameworkStores<ApplicationDBContext>();
 
@@ -45,7 +46,8 @@ namespace IdentityMicroService
                 .AddInMemoryApiScopes(Configuration.GetApiScopes())
                 .AddInMemoryApiResources(Configuration.GetApiResources())
                 .AddInMemoryClients(Configuration.GetClients())
-                .AddDeveloperSigningCredential();
+                .AddDeveloperSigningCredential()
+                .AddExtensionGrantValidator<ResourceOwnerEmailPasswordExtensionGrantValidator>();
 
             builder.Services.Configure<RazorViewEngineOptions>(o =>
             {

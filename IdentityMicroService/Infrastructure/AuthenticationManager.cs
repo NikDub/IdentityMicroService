@@ -1,8 +1,12 @@
 ﻿using IdentityMicroService.Domain.Contracts;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
+using IdentityMicroService.Presentation.Extensions;
+using IdentityModel;
 using IdentityModel.Client;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IdentityMicroService.Infrastructure
 {
@@ -22,24 +26,25 @@ namespace IdentityMicroService.Infrastructure
         public async Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDTO userForAuthentication)
         {
             var client = _httpClientFactory.CreateClient();
-            PasswordTokenRequest tokenRequest = new PasswordTokenRequest()
+            EmailPasswordTokenRequest tokenRequest = new EmailPasswordTokenRequest()
             {
                 Address = "https://localhost:8080/connect/token",
+                GrantType = "emailpassword",
                 ClientId = "myClient",
                 Scope = "TestsAPI offline_access openid",
-                UserName = userForAuthentication.UserName,
-                Password = userForAuthentication.Password
-
+                Email = userForAuthentication.Email,
+                Password = userForAuthentication.Password,
             };
-            var tokenResponse = await client.RequestPasswordTokenAsync(tokenRequest);
+            var tokenResponse = await client.RequestEmailPasswordTokenAsync(tokenRequest);
             return (tokenResponse.AccessToken, tokenResponse.RefreshToken);
         }
 
+
         public async Task<Accounts> ReturnUserIfValid(UserModelForAuthorizationDTO userForAuthentication)
         {
-            var user = await _userManager.FindByNameAsync(userForAuthentication.UserName);
+            var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
 
-            var res = await _signInManager.PasswordSignInAsync(userForAuthentication.UserName, userForAuthentication.Password, false, false);
+            var res = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
 
             if (res.Succeeded)
             {
@@ -51,6 +56,25 @@ namespace IdentityMicroService.Infrastructure
         public async Task SignOut()
         {
             await _signInManager.SignOutAsync();
+        }
+
+        public async Task<Accounts> CreateUser(RegistrationUserDTO model)
+        {
+            var result = await _userManager.CreateAsync(new Accounts { Email = model.Email, UserName = model.Email }, model.Password);
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null) 
+                {
+                    var res = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+
+                    if (res.Succeeded)
+                    {
+                        return user;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

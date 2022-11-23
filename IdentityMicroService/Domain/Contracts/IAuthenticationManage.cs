@@ -7,6 +7,7 @@ namespace IdentityMicroService.Domain.Contracts
     {
         Task<Accounts> ReturnUserIfValid(UserModelForAuthorizationDTO userForAuthentication);
         Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDTO userForAuthentication);
+        Task<Accounts> CreateUser(RegistrationUserDTO model);
         Task SignOut();
     }
 }
