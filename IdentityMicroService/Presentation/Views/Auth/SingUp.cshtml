@@ -9,9 +9,9 @@
 
         $(this).keyup(function () 
         {
-            var NameLen = $('#InputName').val().length;
-            var PassLen = $('#InputPassword').val().length;
-            var ConfPassLen = $('#InputConfirmPassword').val().length;
+            var NameLen = $('#Email').val().length;
+            var PassLen = $('#Password').val().length;
+            var ConfPassLen = $('#ConfirmPassword').val().length;
             if ((NameLen > 0) && (PassLen > 0) && (ConfPassLen > 0)) {
                 $('#SubmitButton').attr('disabled', false);
             }
@@ -37,17 +37,17 @@
     <input hidden asp-for="ReturnUrl" />
     <div>
         <label asp-for="Email">Email</label>
-        <input asp-for="Email" required id="InputName">
+        <input asp-for="Email" required id="Email">
         <span asp-validation-for="Email"></span>
     </div>
     <div>
         <label asp-for="Password">Password</label>
-        <input type="password" asp-for="Password" required id="InputPassword">
+        <input type="password" asp-for="Password" required id="Password">
         <span asp-validation-for="Password"></span>
     </div>
     <div>
         <label asp-for="ConfirmPassword">ConfirmPassword</label>
-        <input type="password" asp-for="ConfirmPassword" required id="InputConfirmPassword">
+        <input type="password" asp-for="ConfirmPassword" required id="ConfirmPassword">
         <span asp-validation-for="ConfirmPassword"></span>
     </div>
 
