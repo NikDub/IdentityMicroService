@@ -1,0 +1,60 @@
+﻿@model IdentityMicroService.Domain.Entities.Models.AuthorizationDTO.RegistrationUserDTO
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () 
+    {
+        $('#SubmitButton').attr('disabled', true);
+
+        $(this).keyup(function () 
+        {
+            var NameLen = $('#Email').val().length;
+            var PassLen = $('#Password').val().length;
+            var ConfPassLen = $('#ConfirmPassword').val().length;
+            if ((NameLen > 0) && (PassLen > 0) && (ConfPassLen > 0)) {
+                $('#SubmitButton').attr('disabled', false);
+            }
+            else 
+            {
+                $('#SubmitButton').attr('disabled', true);
+            }
+        })
+    });
+</script>
+<style>
+    .error {
+        border-color: red;
+        border-width: 3px;
+    }
+</style>
+
+<h1>LOGIN</h1>
+
+<form asp-controller="Auth" asp-action="SingUp" method="post">
+    <div asp-validation-summary="All"></div>
+
+    <input hidden asp-for="ReturnUrl" />
+    <div>
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" required id="Email">
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div>
+        <label asp-for="Password">Password</label>
+        <input type="password" asp-for="Password" required id="Password">
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div>
+        <label asp-for="ConfirmPassword">ConfirmPassword</label>
+        <input type="password" asp-for="ConfirmPassword" required id="ConfirmPassword">
+        <span asp-validation-for="ConfirmPassword"></span>
+    </div>
+
+    <p>
+        <button type="submit" id="SubmitButton">Sing Up</button>
+        <a href="/Auth/Login?ReturnUrl=@Html.ValueFor(m=>m.ReturnUrl)">
+            <button type="button">Login</button>
+        </a>
+    </p>
+</form>
