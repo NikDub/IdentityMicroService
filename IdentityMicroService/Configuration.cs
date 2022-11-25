@@ -1,6 +1,6 @@
-﻿using IdentityServer4;
+﻿using IdentityMicroService.Presentation.Extensions;
+using IdentityServer4;
 using IdentityServer4.Models;
-using System.Security.Claims;
 
 namespace IdentityMicroService
 {
@@ -9,30 +9,29 @@ namespace IdentityMicroService
         internal static IEnumerable<ApiResource> GetApiResources() =>
             new List<ApiResource>
             {
-                new ApiResource("TestsAPI")
+                new ApiResource(PathConfiguration.testApiScope)
             };
 
         internal static IEnumerable<ApiScope> GetApiScopes() =>
             new List<ApiScope>
             {
-                new ApiScope("TestsAPI")
+                new ApiScope(PathConfiguration.testApiScope)
             };
 
         internal static IEnumerable<Client> GetClients() =>
             new List<Client> {
                 new Client
                 {
-                    ClientId = "myClient",
-                    ClientName = "My Custom Client",
+                    ClientId = PathConfiguration.clientId,
                     AllowAccessTokensViaBrowser = true,
                     AlwaysIncludeUserClaimsInIdToken = true,
                     AccessTokenLifetime = 60 * 60 * 24,
-                    AllowedGrantTypes = { "emailpassword", GrantType.ResourceOwnerPassword},
+                    AllowedGrantTypes = { PathConfiguration.resourceOwnerEmailPassword, GrantType.ResourceOwnerPassword},
                     RequireClientSecret = false,
                     AllowOfflineAccess = true,
                     AllowedScopes =
                     {
-                        "TestsAPI",
+                        PathConfiguration.testApiScope,
                         IdentityServerConstants.StandardScopes.OpenId,
                     },
                 }

@@ -6,12 +6,11 @@ namespace IdentityMicroService.Domain.Entities.Models.AuthorizationDTO
     {
         [Required]
         [EmailAddress]
-        public string? Email { get; set; }
+        public string email { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(6)]
-        public string Password { get; set; }
-        [Required]
-        public string ReturnUrl { get; set; }
+        public string password { get; set; }
+        public string returnUrl { get; set; }
     }
 }

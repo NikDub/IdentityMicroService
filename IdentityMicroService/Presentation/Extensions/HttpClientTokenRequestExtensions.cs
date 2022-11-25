@@ -1,5 +1,5 @@
-﻿using IdentityModel.Client;
-using IdentityModel;
+﻿using IdentityModel;
+using IdentityModel.Client;
 
 namespace IdentityMicroService.Presentation.Extensions
 {

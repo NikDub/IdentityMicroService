@@ -1,29 +1,27 @@
-﻿using IdentityMicroService.Domain.Contracts;
+﻿using IdentityMicroService.Application.Services.Abstractions;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityMicroService.Presentation.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class AuthController : Controller
     {
-        public IAuthenticationManage _authenticationManage;
+        private readonly IAuthenticationService _authenticationManager;
 
-        public AuthController(IAuthenticationManage authenticationManage)
+        public AuthController(IAuthenticationService authenticationManager)
         {
-            _authenticationManage = authenticationManage;
+            _authenticationManager = authenticationManager;
         }
 
-        [Route("[action]")]
-        public IActionResult Login(string ReturnUrl)
+        [HttpGet]
+        public IActionResult Login(string returnUrl)
         {
-            return View(new UserModelForAuthorizationDTO { ReturnUrl = ReturnUrl });
+            return View(new UserModelForAuthorizationDTO { returnUrl = returnUrl });
         }
 
         [HttpPost]
-        [Route("[action]")]
         public async Task<IActionResult> LoginAsync(UserModelForAuthorizationDTO model)
         {
             if (!ModelState.IsValid)
@@ -31,12 +29,12 @@ namespace IdentityMicroService.Presentation.Controllers
                 return View();
             }
 
-            var user = await _authenticationManage.ReturnUserIfValid(model);
+            var user = await _authenticationManager.ReturnUserIfValidAsync(model);
 
             if (user != null)
             {
-                var (accessToken, refreshToken) = await _authenticationManage.GetTokensAsync(model);
-                return Redirect(model.ReturnUrl);
+                var (accessToken, refreshToken) = await _authenticationManager.GetTokensAsync(model);
+                return Redirect(model.returnUrl);
             }
 
             ModelState.AddModelError("", "Something went wrong");
@@ -44,38 +42,35 @@ namespace IdentityMicroService.Presentation.Controllers
             return View();
         }
 
-
-        [Route("[action]")]
-        public IActionResult SingUp(string ReturnUrl)
+        [HttpGet]
+        public IActionResult SingUp(string returnUrl)
         {
-            return View(new RegistrationUserDTO { ReturnUrl = ReturnUrl });
+            return View(new RegistrationUserDTO { returnUrl = returnUrl });
         }
 
         [HttpPost]
-        [Route("[action]")]
-        public async Task<IActionResult> SingUp(RegistrationUserDTO model)
+        public async Task<IActionResult> SingUpAsync(RegistrationUserDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            var user = await _authenticationManage.CreateUser(model);
+            var user = await _authenticationManager.CreateUserAsync(model);
 
             if (user != null)
             {
-                var (accessToken, refreshToken) = await _authenticationManage.GetTokensAsync(model);
-                return Redirect(model.ReturnUrl);
+                var (accessToken, refreshToken) = await _authenticationManager.GetTokensAsync(model);
+                return Redirect(model.returnUrl);
             }
 
             return View();
         }
 
         [HttpGet]
-        [Route("[action]")]
-        public async Task<IActionResult> SingOut(string ReturnUrl)
+        public async Task<IActionResult> SingOutAsync(string returnUrl)
         {
-            await _authenticationManage.SignOut();
+            await _authenticationManager.SignOutAsync();
             return Redirect("/Auth/Index");
         }
 
@@ -85,7 +80,6 @@ namespace IdentityMicroService.Presentation.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpGet]
-        [Route("[action]")]
         public IActionResult Index()
         {
             return View();

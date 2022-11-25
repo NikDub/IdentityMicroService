@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -28,8 +27,8 @@
 
   <ItemGroup>
     <Folder Include="Application\Mapping\" />
-    <Folder Include="Application\Services\" />
-    <Folder Include="Infrastructure\Migrations\" />
+    <Folder Include="Domain\Contracts\" />
+    <Folder Include="Infrastructure\Repository\" />
   </ItemGroup>
 
 </Project>

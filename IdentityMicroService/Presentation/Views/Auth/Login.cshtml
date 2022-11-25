@@ -27,21 +27,21 @@
 <form asp-controller="Auth" asp-action="Login" method="post" id="LoginForm">
     <div asp-validation-summary="All"></div>
 
-    <input hidden asp-for="ReturnUrl" />
+    <input hidden asp-for="returnUrl" />
     <div>
-        <label asp-for="Email">Email</label>
-        <input asp-for="Email" required id="Email">
-        <span asp-validation-for="Email"></span>
+        <label asp-for="email">Email</label>
+        <input asp-for="email" required id="Email">
+        <span asp-validation-for="email"></span>
     </div>
     <div>
-        <label asp-for="Password">Password</label>
-        <input type="password" asp-for="Password" required id="Password">
-        <span asp-validation-for="Password"></span>
+        <label asp-for="password">Password</label>
+        <input type="password" asp-for="password" required id="Password">
+        <span asp-validation-for="password"></span>
     </div>
 
     <p>
         <button type="submit" id="SubmitButton">Login</button>
-        <a href="/Auth/SingUp?ReturnUrl=@Html.ValueFor(m=>m.ReturnUrl)">
+        <a href="/Auth/SingUp?returnUrl=@Html.ValueFor(m=>m.returnUrl)">
             <button type="button">Sing Up</button>
         </a>
     </p>

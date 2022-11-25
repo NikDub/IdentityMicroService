@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityMicroService.Infrastructure.Repository
+namespace IdentityMicroService.Infrastructure
 {
     public class ApplicationDBContext : IdentityDbContext
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
 
-        public DbSet<Accounts> Accounts { get; set; }
+        public DbSet<Account> Accounts { get; set; }
     }
 }

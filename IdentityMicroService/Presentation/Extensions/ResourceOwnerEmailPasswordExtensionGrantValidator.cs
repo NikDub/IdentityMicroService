@@ -6,18 +6,17 @@ using static IdentityModel.OidcConstants;
 
 namespace IdentityMicroService.Presentation.Extensions
 {
-
     public class ResourceOwnerEmailPasswordExtensionGrantValidator : IExtensionGrantValidator
     {
-        private SignInManager<Accounts> _signInManager;
-        private UserManager<Accounts> _userManager;
+        private readonly SignInManager<Account> _signInManager;
+        private readonly UserManager<Account> _userManager;
 
-        public ResourceOwnerEmailPasswordExtensionGrantValidator(UserManager<Accounts> userManager, SignInManager<Accounts> signInManager)
+        public ResourceOwnerEmailPasswordExtensionGrantValidator(UserManager<Account> userManager, SignInManager<Account> signInManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
         }
-        public string GrantType => "emailpassword";
+        public string GrantType => PathConfiguration.resourceOwnerEmailPassword;
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {

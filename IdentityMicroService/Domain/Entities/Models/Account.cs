@@ -2,11 +2,11 @@
 
 namespace IdentityMicroService.Domain.Entities.Models
 {
-    public class Accounts : IdentityUser
+    public class Account : IdentityUser
     {
         public int PhotoId { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public int? CreatedBy { get; set; }
 
         public DateTime UpdatedAt { get; set; }
