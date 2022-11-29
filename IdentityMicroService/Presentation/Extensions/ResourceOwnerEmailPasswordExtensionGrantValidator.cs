@@ -16,7 +16,7 @@ namespace IdentityMicroService.Presentation.Extensions
             _signInManager = signInManager;
             _userManager = userManager;
         }
-        public string GrantType => PathConfiguration.resourceOwnerEmailPassword;
+        public string GrantType => PathConfiguration.ResourceOwnerEmailPassword;
 
         public async Task ValidateAsync(ExtensionGrantValidationContext context)
         {

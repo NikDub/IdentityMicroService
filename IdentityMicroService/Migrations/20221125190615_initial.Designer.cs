@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityMicroService.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20221125151607_init")]
-    partial class init
+    [Migration("20221125190615_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,26 @@ namespace IdentityMicroService.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "8d734af4-145b-4778-b320-14effafc96b3",
+                            Name = "Receptionist",
+                            NormalizedName = "RECEPTIONIST"
+                        },
+                        new
+                        {
+                            Id = "d3124d4b-0b36-4972-bfb0-e6b196c170a8",
+                            Name = "Doctor",
+                            NormalizedName = "DOCTOR"
+                        },
+                        new
+                        {
+                            Id = "6cb8651b-2e27-4b3a-b47e-8b33eddc9705",
+                            Name = "Patient",
+                            NormalizedName = "PATIENT"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -210,6 +230,13 @@ namespace IdentityMicroService.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68",
+                            RoleId = "8d734af4-145b-4778-b320-14effafc96b3"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -251,6 +278,28 @@ namespace IdentityMicroService.Migrations
                         .HasColumnType("int");
 
                     b.HasDiscriminator().HasValue("Account");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "8d900c1d-91c9-4f37-90d9-a2de11c63ccd",
+                            Email = "username@username.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USERNAME@USERNAME.COM",
+                            NormalizedUserName = "USERNAME",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJq15/54PDvaLSxG76nvcPHmriYg+AYAdHmybU45dLwtDAUymIpXb2Ebwurpq+WcRg==",
+                            PhoneNumber = "XXXXXXXXXXXXX",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "00000000-0000-0000-0000-000000000000",
+                            TwoFactorEnabled = false,
+                            UserName = "username",
+                            CreatedAt = new DateTime(2022, 11, 25, 19, 6, 14, 807, DateTimeKind.Utc).AddTicks(4763),
+                            PhotoId = 0,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

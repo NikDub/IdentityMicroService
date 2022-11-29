@@ -9,7 +9,7 @@ namespace IdentityMicroService.Infrastructure
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
 
-        public DbSet<Accounts> Accounts { get; set; }
+        public DbSet<Account> Account { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

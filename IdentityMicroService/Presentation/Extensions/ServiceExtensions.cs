@@ -2,6 +2,7 @@
 using IdentityMicroService.Application.Services.Abstractions;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Infrastructure;
+using IdentityMicroService.Presentation.IdentityConfiguration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace IdentityMicroService.Presentation.Extensions
 
             services.AddIdentityServer(options =>
             {
-                options.UserInteraction.LoginUrl = PathConfiguration.loginPath;
+                options.UserInteraction.LoginUrl = PathConfiguration.LoginPath;
             })
                  .AddAspNetIdentity<Account>()
                  .AddInMemoryIdentityResources(Configuration.GetIdentityResources())
@@ -32,13 +33,14 @@ namespace IdentityMicroService.Presentation.Extensions
                  .AddInMemoryApiResources(Configuration.GetApiResources())
                  .AddInMemoryClients(Configuration.GetClients())
                  .AddDeveloperSigningCredential()
-                 .AddExtensionGrantValidator<ResourceOwnerEmailPasswordExtensionGrantValidator>();
+                 .AddExtensionGrantValidator<ResourceOwnerEmailPasswordExtensionGrantValidator>()
+                 .AddProfileService<ProfileService>();
 
 
             services.ConfigureApplicationCookie(config =>
             {
-                config.Cookie.Name = PathConfiguration.cookieName;
-                config.LoginPath = PathConfiguration.loginPath;
+                config.Cookie.Name = PathConfiguration.CookieName;
+                config.LoginPath = PathConfiguration.LoginPath;
             });
         }
 
@@ -46,7 +48,7 @@ namespace IdentityMicroService.Presentation.Extensions
         {
             services.AddDbContext<ApplicationDBContext>(config =>
             {
-                config.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                config.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b=>b.MigrationsAssembly("IdentityMicroService"));
             });
         }
 
@@ -57,7 +59,7 @@ namespace IdentityMicroService.Presentation.Extensions
             services.Configure<RazorViewEngineOptions>(o =>
             {
                 o.ViewLocationFormats.Clear();
-                o.ViewLocationFormats.Add(PathConfiguration.pathToView + RazorViewEngine.ViewExtension);
+                o.ViewLocationFormats.Add(PathConfiguration.PathToView + RazorViewEngine.ViewExtension);
             });
         }
     }

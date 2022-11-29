@@ -1,5 +1,8 @@
 ﻿using IdentityMicroService.Application.Services.Abstractions;
+using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
+using IdentityServer4.Extensions;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +11,11 @@ namespace IdentityMicroService.Presentation.Controllers
     [Route("[controller]/[action]")]
     public class AuthController : Controller
     {
-        private readonly IAuthenticationService _authenticationManager;
+        private readonly IAuthenticationService _authenticationService;
 
-        public AuthController(IAuthenticationService authenticationManager)
+        public AuthController(IAuthenticationService authenticationService)
         {
-            _authenticationManager = authenticationManager;
+            _authenticationService = authenticationService;
         }
 
         [HttpGet]
@@ -29,15 +32,19 @@ namespace IdentityMicroService.Presentation.Controllers
                 return View();
             }
 
-            var user = await _authenticationManager.ReturnUserIfValidAsync(model);
+            var user = await _authenticationService.ReturnUserIfValidAsync(model);
 
             if (user != null)
             {
-                var (accessToken, refreshToken) = await _authenticationManager.GetTokensAsync(model);
-                return Redirect(model.returnUrl);
+                var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+
+                if (model.returnUrl.IsNullOrEmpty())
+                    return RedirectToAction(nameof(Index)); //TODO
+                else
+                    return Redirect(model.returnUrl);
             }
 
-            ModelState.AddModelError("", "Something went wrong");
+            ModelState.AddModelError("", "Either an email or a password is incorrect");
 
             return View();
         }
@@ -56,22 +63,40 @@ namespace IdentityMicroService.Presentation.Controllers
                 return View();
             }
 
-            var user = await _authenticationManager.CreateUserAsync(model);
+            var user = await _authenticationService.CreateUserAsync(model);
 
             if (user != null)
             {
-                var (accessToken, refreshToken) = await _authenticationManager.GetTokensAsync(model);
-                return Redirect(model.returnUrl);
+                await _authenticationService.AddUserRoleAsync(user, UserRole.Patient);
+                var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+
+                if (model.returnUrl.IsNullOrEmpty())
+                    return RedirectToAction(nameof(Index)); //TODO
+                else
+                    return Redirect(model.returnUrl);
             }
 
             return View();
         }
 
+        [Authorize(Roles = "Receptionist")]
+        [HttpPut]
+        public async Task<IActionResult> ChangeRoleAsync(string userId, string role)
+        {
+            var user = await _authenticationService.GetUserById(userId);
+            if (Enum.TryParse(role, out UserRole roleEnum) && user != null)
+            {
+                await _authenticationService.AddUserRoleAsync(user, roleEnum);
+                return Ok();
+            }
+            else return BadRequest();
+        }
+
         [HttpGet]
         public async Task<IActionResult> SingOutAsync(string returnUrl)
         {
-            await _authenticationManager.SignOutAsync();
-            return Redirect("/Auth/Index");
+            await _authenticationService.SignOutAsync();
+            return RedirectToAction(nameof(Index)); //TODO
         }
 
         /// <summary>

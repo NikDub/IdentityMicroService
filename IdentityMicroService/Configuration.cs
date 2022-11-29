@@ -9,29 +9,28 @@ namespace IdentityMicroService
         internal static IEnumerable<ApiResource> GetApiResources() =>
             new List<ApiResource>
             {
-                new ApiResource(PathConfiguration.testApiScope)
+                new ApiResource(PathConfiguration.TestApiScope)
             };
 
         internal static IEnumerable<ApiScope> GetApiScopes() =>
             new List<ApiScope>
             {
-                new ApiScope(PathConfiguration.testApiScope)
+                new ApiScope(PathConfiguration.TestApiScope)
             };
 
         internal static IEnumerable<Client> GetClients() =>
             new List<Client> {
                 new Client
                 {
-                    ClientId = PathConfiguration.clientId,
+                    ClientId = PathConfiguration.ClientId,
                     AllowAccessTokensViaBrowser = true,
                     AlwaysIncludeUserClaimsInIdToken = true,
-                    AccessTokenLifetime = 60 * 60 * 24,
-                    AllowedGrantTypes = { PathConfiguration.resourceOwnerEmailPassword, GrantType.ResourceOwnerPassword},
+                    AllowedGrantTypes = { PathConfiguration.ResourceOwnerEmailPassword, GrantType.ResourceOwnerPassword},
                     RequireClientSecret = false,
                     AllowOfflineAccess = true,
                     AllowedScopes =
                     {
-                        PathConfiguration.testApiScope,
+                        PathConfiguration.TestApiScope,
                         IdentityServerConstants.StandardScopes.OpenId,
                     },
                 }

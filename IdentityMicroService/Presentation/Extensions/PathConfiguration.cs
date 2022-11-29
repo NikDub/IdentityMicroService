@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc.Razor;
-using System.Reflection;
-
+﻿
 namespace IdentityMicroService.Presentation.Extensions
 {
     public static class PathConfiguration
     {
-        public const string tokenRoute = "https://localhost:8080/connect/token";
-        public const string cookieName = "IdentityServer.Cookies";
-        public const string loginPath = "/Auth/Login";
-        public const string resourceOwnerEmailPassword = "emailpassword";
-        public const string clientId = "myClient";
-        public const string testApiScope = "TestsAPI";
-        public const string pathToView = "/Presentation/Views/{1}/{0}";
+        public const string TokenRoute = "/connect/token";
+        public const string CookieName = "IdentityServer.Cookies";
+        public const string LoginPath = "/Auth/Login";
+        public const string ResourceOwnerEmailPassword = "emailpassword";
+        public const string ClientId = "myClient";
+        public const string TestApiScope = "TestsAPI";
+        public const string PathToView = "/Presentation/Views/{1}/{0}";
     }
 }

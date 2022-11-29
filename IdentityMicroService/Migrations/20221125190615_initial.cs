@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace IdentityMicroService.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -161,6 +163,26 @@ namespace IdentityMicroService.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "6cb8651b-2e27-4b3a-b47e-8b33eddc9705", null, "Patient", "PATIENT" },
+                    { "8d734af4-145b-4778-b320-14effafc96b3", null, "Receptionist", "RECEPTIONIST" },
+                    { "d3124d4b-0b36-4972-bfb0-e6b196c170a8", null, "Doctor", "DOCTOR" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Discriminator", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoId", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UpdatedBy", "UserName" },
+                values: new object[] { "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68", 0, "8d900c1d-91c9-4f37-90d9-a2de11c63ccd", new DateTime(2022, 11, 25, 19, 6, 14, 807, DateTimeKind.Utc).AddTicks(4763), null, "Account", "username@username.com", false, false, null, "USERNAME@USERNAME.COM", "USERNAME", "AQAAAAIAAYagAAAAEJq15/54PDvaLSxG76nvcPHmriYg+AYAdHmybU45dLwtDAUymIpXb2Ebwurpq+WcRg==", "XXXXXXXXXXXXX", false, 0, "00000000-0000-0000-0000-000000000000", false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "username" });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[] { "8d734af4-145b-4778-b320-14effafc96b3", "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

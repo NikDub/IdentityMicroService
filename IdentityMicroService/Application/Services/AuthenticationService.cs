@@ -1,4 +1,5 @@
 ﻿using IdentityMicroService.Application.Services.Abstractions;
+using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
 using IdentityMicroService.Presentation.Extensions;
@@ -13,24 +14,27 @@ namespace IdentityMicroService.Application.Services
         private readonly SignInManager<Account> _signInManager;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthenticationService(UserManager<Account> userManager, SignInManager<Account> signInManager, IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public AuthenticationService(UserManager<Account> userManager, SignInManager<Account> signInManager, IHttpClientFactory httpClientFactory, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
+            _roleManager = roleManager;
         }
 
         public async Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDTO userForAuthentication)
         {
+            var webUrl = _configuration.GetValue<string>("Endpoints:Https:Url");
             var client = _httpClientFactory.CreateClient();
             EmailPasswordTokenRequest tokenRequest = new EmailPasswordTokenRequest()
             {
-                Address = PathConfiguration.tokenRoute,
-                GrantType = PathConfiguration.resourceOwnerEmailPassword,
-                ClientId = PathConfiguration.clientId,
-                Scope = $"{PathConfiguration.testApiScope} {IdentityServerConstants.StandardScopes.OpenId} {IdentityServerConstants.StandardScopes.OfflineAccess}",
+                Address = $"{webUrl}{PathConfiguration.TokenRoute}",
+                GrantType = PathConfiguration.ResourceOwnerEmailPassword,
+                ClientId = PathConfiguration.ClientId,
+                Scope = $"{PathConfiguration.TestApiScope} {IdentityServerConstants.StandardScopes.OpenId} {IdentityServerConstants.StandardScopes.OfflineAccess}",
                 Email = userForAuthentication.email,
                 Password = userForAuthentication.password,
             };
@@ -74,6 +78,22 @@ namespace IdentityMicroService.Application.Services
                 }
             }
             return null;
+        }
+
+        public async Task AddUserRoleAsync(Account user, UserRole role)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Count > 0)
+            {
+                await _userManager.RemoveFromRolesAsync(user, roles);
+            }
+
+            await _userManager.AddToRoleAsync(user, role.ToString());
+        }
+
+        public async Task<Account> GetUserById(string userId)
+        {
+            return await _userManager.FindByIdAsync(userId);
         }
     }
 }
