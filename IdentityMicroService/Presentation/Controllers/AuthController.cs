@@ -64,7 +64,7 @@ namespace IdentityMicroService.Presentation.Controllers
 
             var result = await _authenticationService.CreatePatientAsync(model);
 
-            if (result != null)
+            if (result)
             {
                 var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
