@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using IdentityMicroService.Domain.Entities.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using IdentityMicroService.Domain.Entities.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IdentityMicroService.Presentation.IdentityConfiguration
 {

@@ -48,7 +48,7 @@ namespace IdentityMicroService.Presentation.Extensions
         {
             services.AddDbContext<ApplicationDBContext>(config =>
             {
-                config.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b=>b.MigrationsAssembly("IdentityMicroService"));
+                config.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("IdentityMicroService"));
             });
         }
 

@@ -2,7 +2,6 @@
 using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
 using IdentityServer4.Extensions;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,11 +20,11 @@ namespace IdentityMicroService.Presentation.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl)
         {
-            return View(new UserModelForAuthorizationDTO { returnUrl = returnUrl });
+            return View(new UserModelForAuthorizationDTO { ReturnUrl = returnUrl });
         }
 
         [HttpPost]
-        public async Task<IActionResult> LoginAsync(UserModelForAuthorizationDTO model)
+        public async Task<IActionResult> Login(UserModelForAuthorizationDTO model)
         {
             if (!ModelState.IsValid)
             {
@@ -38,10 +37,10 @@ namespace IdentityMicroService.Presentation.Controllers
             {
                 var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
-                if (model.returnUrl.IsNullOrEmpty())
+                if (model.ReturnUrl.IsNullOrEmpty())
                     return RedirectToAction(nameof(Index)); //TODO
                 else
-                    return Redirect(model.returnUrl);
+                    return Redirect(model.ReturnUrl);
             }
 
             ModelState.AddModelError("", "Either an email or a password is incorrect");
@@ -50,38 +49,37 @@ namespace IdentityMicroService.Presentation.Controllers
         }
 
         [HttpGet]
-        public IActionResult SingUp(string returnUrl)
+        public IActionResult SignUp(string returnUrl)
         {
-            return View(new RegistrationUserDTO { returnUrl = returnUrl });
+            return View(new RegistrationUserDTO { ReturnUrl = returnUrl });
         }
 
         [HttpPost]
-        public async Task<IActionResult> SingUpAsync(RegistrationUserDTO model)
+        public async Task<IActionResult> SignUp(RegistrationUserDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
-            var user = await _authenticationService.CreateUserAsync(model);
+            var result = await _authenticationService.CreatePatientAsync(model);
 
-            if (user != null)
+            if (result != null)
             {
-                await _authenticationService.AddUserRoleAsync(user, UserRole.Patient);
                 var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
-                if (model.returnUrl.IsNullOrEmpty())
+                if (model.ReturnUrl.IsNullOrEmpty())
                     return RedirectToAction(nameof(Index)); //TODO
                 else
-                    return Redirect(model.returnUrl);
+                    return Redirect(model.ReturnUrl);
             }
 
             return View();
         }
 
-        [Authorize(Roles = "Receptionist")]
+        [Authorize(Roles = nameof(UserRole.Receptionist))]
         [HttpPut]
-        public async Task<IActionResult> ChangeRoleAsync(string userId, string role)
+        public async Task<IActionResult> ChangeRole(string userId, string role)
         {
             var user = await _authenticationService.GetUserById(userId);
             if (Enum.TryParse(role, out UserRole roleEnum) && user != null)
@@ -93,7 +91,7 @@ namespace IdentityMicroService.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SingOutAsync(string returnUrl)
+        public async Task<IActionResult> SingOut(string returnUrl)
         {
             await _authenticationService.SignOutAsync();
             return RedirectToAction(nameof(Index)); //TODO

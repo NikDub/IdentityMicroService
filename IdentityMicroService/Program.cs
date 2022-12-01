@@ -1,7 +1,4 @@
 using IdentityMicroService.Presentation.Extensions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityMicroService
 {

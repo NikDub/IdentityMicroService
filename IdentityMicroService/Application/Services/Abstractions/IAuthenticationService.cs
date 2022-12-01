@@ -9,6 +9,7 @@ namespace IdentityMicroService.Application.Services.Abstractions
         Task<Account> ReturnUserIfValidAsync(UserModelForAuthorizationDTO userForAuthentication);
         Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDTO userForAuthentication);
         Task<Account> CreateUserAsync(RegistrationUserDTO model);
+        Task<bool> CreatePatientAsync(RegistrationUserDTO model);
         Task AddUserRoleAsync(Account user, UserRole role);
         Task SignOutAsync();
         Task<Account> GetUserById(string userId);

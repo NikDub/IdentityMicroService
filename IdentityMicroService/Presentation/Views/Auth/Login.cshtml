@@ -1,22 +1,36 @@
 ﻿@model IdentityMicroService.Domain.Entities.Models.AuthorizationDTO.UserModelForAuthorizationDTO
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
+<style>
+    .btn{
+        border: 1px solid #7c7474;
+        background-color: buttonface;
+        color: buttontext;
+        padding: 1px 5px;
+        text-decoration: auto;
+        border-radius: 2px;
+        cursor: default;
+        font-size: 15px;
+    }
+    .btn:hover{
+            background-color: #d9d9d9;
+    }
+</style>
 <script>
     $(document).ready(function () 
     {
-        $('#SubmitButton').attr('disabled', true);
+        $('#submitButton').attr('disabled', true);
 
         $(this).keyup(function () 
         {
             var NameLen = $('#Email').val().length;
             var PassLen = $('#Password').val().length;
             if ((NameLen > 0) && (PassLen > 0)) {
-                $('#SubmitButton').attr('disabled', false);
+                $('#submitButton').attr('disabled', false);
             }
             else 
             {
-                $('#SubmitButton').attr('disabled', true);
+                $('#submitButton').attr('disabled', true);
             }
         })
     });
@@ -24,25 +38,20 @@
 
 <h1>LOGIN</h1>
 
-<form asp-controller="Auth" asp-action="Login" method="post" id="LoginForm">
-    <div asp-validation-summary="All"></div>
-
-    <input hidden asp-for="returnUrl" />
+@using (Html.BeginForm("Login", "Auth", FormMethod.Post))
+{
+    @Html.ValidationSummary()
+    @Html.HiddenFor(e => e.ReturnUrl)
     <div>
-        <label asp-for="email">Email</label>
-        <input asp-for="email" required id="Email">
-        <span asp-validation-for="email"></span>
+        @Html.LabelFor(e=>e.Email, "Email")
+        @Html.TextBoxFor(e=>e.Email)
     </div>
     <div>
-        <label asp-for="password">Password</label>
-        <input type="password" asp-for="password" required id="Password">
-        <span asp-validation-for="password"></span>
+        @Html.LabelFor(e=>e.Password, "Password")
+        @Html.TextBoxFor(e=>e.Password, "", new{ type = "password"})
     </div>
-
     <p>
-        <button type="submit" id="SubmitButton">Login</button>
-        <a href="/Auth/SingUp?returnUrl=@Html.ValueFor(m=>m.returnUrl)">
-            <button type="button">Sing Up</button>
-        </a>
+        @Html.TextBox("submitButton", "Login", new {type="submit"})
+        @Html.ActionLink("Sign Up", "SignUp", "Auth", new { ReturnUrl = @Html.ValueFor(m=>m.ReturnUrl)}, new { id = "signup", @class="btn", click=""})
     </p>
-</form>
+}
