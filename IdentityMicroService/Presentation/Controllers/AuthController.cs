@@ -1,4 +1,5 @@
 ﻿using IdentityMicroService.Application.Services.Abstractions;
+using IdentityMicroService.Application.Services.AuthorizationDTO;
 using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
 using IdentityServer4.Extensions;
@@ -62,27 +63,38 @@ namespace IdentityMicroService.Presentation.Controllers
                 return View();
             }
 
+            if (await _authenticationService.CheckExistsEmail(model.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already in use");
+                return View();
+            }
+
             var result = await _authenticationService.CreatePatientAsync(model);
 
             if (result)
             {
+                var emailResult = await _authenticationService.SendEmailConfirmAsync(model, Url);
                 var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+
+                if (!emailResult)
+                {
+                    return BadRequest(model.ReturnUrl);
+                }
 
                 if (model.ReturnUrl.IsNullOrEmpty())
                     return RedirectToAction(nameof(Index)); //TODO
                 else
                     return Redirect(model.ReturnUrl);
             }
-
             return View();
         }
 
         [Authorize(Roles = nameof(UserRole.Receptionist))]
-        [HttpPut]
-        public async Task<IActionResult> ChangeRole(string userId, string role)
+        [HttpPut("/{userId}")]
+        public async Task<IActionResult> ChangeRole(string userId, RoleDTO model)
         {
             var user = await _authenticationService.GetUserById(userId);
-            if (Enum.TryParse(role, out UserRole roleEnum) && user != null)
+            if (Enum.TryParse(model.Role, out UserRole roleEnum) && user != null)
             {
                 await _authenticationService.AddUserRoleAsync(user, roleEnum);
                 return Ok();
@@ -97,13 +109,22 @@ namespace IdentityMicroService.Presentation.Controllers
             return RedirectToAction(nameof(Index)); //TODO
         }
 
-        /// <summary>
-        /// ONLY FOR TESTS
-        /// </summary>
-        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            var result = await _authenticationService.ConfirmEmailAsync(email, token);
+            return View(result ? "SuccessConfirmEmail " : "FailureConfirmEmail");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> IsEmailExitst(string email)
+        {
+            return Json(await _authenticationService.CheckExistsEmail(email));
+        }
+
         [Authorize]
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }

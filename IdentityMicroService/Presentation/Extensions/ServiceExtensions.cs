@@ -4,6 +4,7 @@ using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Infrastructure;
 using IdentityMicroService.Presentation.IdentityConfiguration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,8 @@ namespace IdentityMicroService.Presentation.Extensions
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             })
-               .AddEntityFrameworkStores<ApplicationDBContext>();
+               .AddEntityFrameworkStores<ApplicationDBContext>()
+               .AddDefaultTokenProviders();
 
             services.AddIdentityServer(options =>
             {
@@ -55,6 +57,7 @@ namespace IdentityMicroService.Presentation.Extensions
         public static void ConfigureServices(this IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.Configure<RazorViewEngineOptions>(o =>
             {

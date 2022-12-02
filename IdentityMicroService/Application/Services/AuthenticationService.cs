@@ -6,6 +6,7 @@ using IdentityMicroService.Infrastructure;
 using IdentityMicroService.Presentation.Extensions;
 using IdentityServer4;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityMicroService.Application.Services
 {
@@ -16,14 +17,21 @@ namespace IdentityMicroService.Application.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDBContext _dBContext;
+        private readonly IEmailService _emailService;
 
-        public AuthenticationService(UserManager<Account> userManager, SignInManager<Account> signInManager, IHttpClientFactory httpClientFactory, IConfiguration configuration, ApplicationDBContext dBContext)
+        public AuthenticationService(UserManager<Account> userManager,
+            SignInManager<Account> signInManager,
+            IHttpClientFactory httpClientFactory,
+            IConfiguration configuration,
+            ApplicationDBContext dBContext,
+            IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
             _dBContext = dBContext;
+            _emailService = emailService;
         }
 
         public async Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDTO userForAuthentication)
@@ -119,5 +127,45 @@ namespace IdentityMicroService.Application.Services
 
             return true;
         }
+
+        public async Task<bool> SendEmailConfirmAsync(RegistrationUserDTO model, IUrlHelper url)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if(user != null)
+            {
+                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                if (token != null)
+                {
+                    var confirmationLink = url.Action("ConfirmEmail", "Auth", new { token, email = model.Email }, "https");
+                    if (confirmationLink != null)
+                    {
+                        bool emailResponse = _emailService.SendEmail(model.Email, confirmationLink);
+                        return emailResponse;
+                    }
+                }
+            }
+            return false;
+
+        }
+
+        public async Task<bool> ConfirmEmailAsync(string email, string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if(user != null)
+            {
+                var result = await _userManager.ConfirmEmailAsync(user, token);
+                if(result.Succeeded)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public async Task<bool> CheckExistsEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            return user != null;
+        } 
     }
 }
