@@ -2,26 +2,27 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
- 
+
 <script>
-    $(document).ready(function () 
-    {
+    $(document).ready(function () {
+        var passwordMinLength = 6;
+        var passwordMaxLength = 15;
+
         $('#submitButton').attr('disabled', true);
+
         function isEmail(email) {
             var regex = /^([a-zA-Z0-9_.+-]{3,20})+([@@]{1})+([a-zA-Z0-9])+([.]{1})+([a-zA-Z0-9]{2,4})+$/;
             return regex.test(email);
         }
 
-        $('#email').focusout(function(){
+        $('#email').focusout(function () {
             var NameLen = $(this).val().length;
-            if (NameLen == 0)
-            {
+            if (NameLen == 0) {
                 $(this).addClass('errorBorder');
                 $("#emailSpan").html("Please, enter the email").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else
-            {
+            else {
                 $(this).removeClass('errorBorder');
                 $("#emailSpan").html("").removeClass('errorText');
                 $('#submitButton').attr('disabled', false);
@@ -30,55 +31,46 @@
                     url: '/Auth/IsEmailExitst?email=' + $('#email').val(),
                     type: 'Get',
                     dataType: 'json',
-                    success: function (html) 
-                    {
-                        if (html || $('#email').val().indexOf("@@") == -1 || !isEmail($('#email').val()))
-                       {
+                    success: function (html) {
+                        if (html || $('#email').val().indexOf("@@") == -1 || !isEmail($('#email').val())) {
                             $('#email').addClass('errorBorder');
-                            if(html){
+                            if (html) {
                                 $("#emailSpan").html("This email already used").addClass('errorText');
                                 $('#submitButton').attr('disabled', true);
                             }
-                            else if($('#email').val().indexOf("@@") == -1 || !isEmail($('#email').val()))
-                            {
+                            else if ($('#email').val().indexOf("@@") == -1 || !isEmail($('#email').val())) {
                                 $("#emailSpan").html("You've entered an invalid email").addClass('errorText');
                                 $('#submitButton').attr('disabled', true);
                             }
-                       }
-                       else
-                       {
+                        }
+                        else {
                             $('#email').removeClass('errorBorder');
                             $("#emailSpan").html("").removeClass('errorText');
                             $('#submitButton').attr('disabled', false);
-                       }
+                        }
                     }
                 });
             };
         });
 
-        $('#password').focusout(function () 
-        {
+        $('#password').focusout(function () {
             var NameLen = $(this).val().length;
-            if(NameLen == 0)
-            {
+            if (NameLen == 0) {
                 $(this).addClass('errorBorder');
                 $("#passwordSpan").html("Please, enter the password").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else if (NameLen < 6) 
-            {
+            else if (NameLen < passwordMinLength) {
                 $(this).addClass('errorBorder');
                 $("#passwordSpan").html("Password lenght can be 6 and more char").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else if (NameLen > 15) 
-            {
+            else if (NameLen > passwordMaxLength) {
                 $(this).addClass('errorBorder');
                 $("#passwordSpan").html("Password lenght can be 15 and less char").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else
-            {
+            else {
                 $(this).removeClass('errorBorder');
                 $("#passwordSpan").html("").removeClass('errorText');
                 $('#submitButton').attr('disabled', false);
@@ -90,17 +82,15 @@
 
             if (NameLen == 0) {
                 $(this).addClass('errorBorder');
-                $("#confirmPasswordSpan").html("Please, reenter the password").addClass('errorText');
+                $("#confirmPasswordSpan").html("Please, reenter the confirm password").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else if ($('#confirmPassword').val() != $('#password').val()) 
-            {
+            else if ($('#confirmPassword').val() != $('#password').val()) {
                 $(this).addClass('errorBorder');
                 $("#confirmPasswordSpan").html("The passwords you’ve entered don’t coincide").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else 
-            {
+            else {
                 $(this).removeClass('errorBorder');
                 $("#confirmPasswordSpan").html("").removeClass('errorText');
                 $('#submitButton').attr('disabled', false);
@@ -124,6 +114,7 @@
         border-color: red;
         border-width: 3px;
     }
+
     .errorText {
         color: red;
     }
@@ -142,7 +133,7 @@
     <div>
         <label asp-for="Password">Password</label>
         <input type="password" asp-for="Password" required id="password">
-        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-password"></span> 
+        <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-password"></span>
         <span asp-validation-for="Password" id="passwordSpan"></span>
     </div>
     <div>

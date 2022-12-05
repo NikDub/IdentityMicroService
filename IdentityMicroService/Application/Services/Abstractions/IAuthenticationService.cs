@@ -1,7 +1,6 @@
 ﻿using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Domain.Entities.Models.AuthorizationDTO;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityMicroService.Application.Services.Abstractions

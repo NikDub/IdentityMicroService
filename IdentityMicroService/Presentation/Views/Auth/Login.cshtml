@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
 
 <style>
-    .btn{
+    .btn {
         border: 1px solid #7c7474;
         background-color: buttonface;
         color: buttontext;
@@ -14,9 +14,10 @@
         cursor: default;
         font-size: 15px;
     }
-    .btn:hover{
+
+        .btn:hover {
             background-color: #d9d9d9;
-    }
+        }
 
     .errorBorder {
         border-color: red;
@@ -28,10 +29,12 @@
     }
 </style>
 <script>
-    $(document).ready(function () 
-    {
+    $(document).ready(function () {
+        var passwordMinLength = 6;
+        var passwordMaxLength = 15;
+
         $('#submitButton').attr('disabled', true);
-        
+
         function isEmail(email) {
             var regex = /^([a-zA-Z0-9_.+-]{3,20})+([@@]{1})+([a-zA-Z0-9])+([.]{1})+([a-zA-Z0-9]{2,4})+$/;
             return regex.test(email);
@@ -54,16 +57,13 @@
                     type: 'Get',
                     dataType: 'json',
                     success: function (html) {
-                        if (!html || !isEmail($('#Email').val())) 
-                        {
+                        if (!html || !isEmail($('#Email').val())) {
                             $('#Email').addClass('errorBorder');
-                            if (!html) 
-                            {
+                            if (!html) {
                                 $("#emailSpan").html("User with this email doesn’t exist").addClass('errorText');
                                 $('#submitButton').attr('disabled', true);
                             }
-                            else if (!isEmail($('#Email').val())) 
-                            {
+                            else if (!isEmail($('#Email').val())) {
                                 $("#emailSpan").html("You've entered an invalid email").addClass('errorText');
                                 $('#submitButton').attr('disabled', true);
                             }
@@ -85,12 +85,12 @@
                 $("#passwordSpan").html("Please, enter the password").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else if (NameLen < 6) {
+            else if (NameLen < passwordMinLength) {
                 $(this).addClass('errorBorder');
                 $("#passwordSpan").html("Password lenght can be 6 and more char").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
             }
-            else if (NameLen > 15) {
+            else if (NameLen > passwordMaxLength) {
                 $(this).addClass('errorBorder');
                 $("#passwordSpan").html("Password lenght can be 15 and less char").addClass('errorText');
                 $('#submitButton').attr('disabled', true);
@@ -101,7 +101,7 @@
                 $('#submitButton').attr('disabled', false);
             }
         });
-       
+
         $(document).on('click', '.toggle-password', function () {
 
             $(this).toggleClass("fa-eye fa-eye-slash");

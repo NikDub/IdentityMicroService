@@ -1,6 +1,4 @@
 ﻿using IdentityMicroService.Application.Services.Abstractions;
-using Microsoft.Extensions.Configuration;
-using MimeKit;
 using System.Net;
 using System.Net.Mail;
 
@@ -8,7 +6,7 @@ namespace IdentityMicroService.Application.Services
 {
     public class EmailService : IEmailService
     {
-        public IConfiguration _configuration { get; }
+        private readonly IConfiguration _configuration;
 
         public EmailService(IConfiguration configuration)
         {
@@ -19,14 +17,14 @@ namespace IdentityMicroService.Application.Services
         {
             MailMessage emailMessage = new MailMessage();
 
-            emailMessage.From = new MailAddress(_configuration.GetValue<string>("SMTP:From"), _configuration.GetValue<string>("SMTP:FromName"));
+            emailMessage.From = new MailAddress(_configuration.GetValue<string>("SMTP:SendFromEmail"), _configuration.GetValue<string>("SMTP:SendFromEmailName"));
             emailMessage.To.Add(new MailAddress(email));
-            emailMessage.Subject = "Confirm your email";
+            emailMessage.Subject = _configuration.GetValue<string>("SMTP:EmailTitle");
             emailMessage.Body = message;
 
             var client = new SmtpClient(_configuration.GetValue<string>("SMTP:Host"), _configuration.GetValue<int>("SMTP:Port"))
             {
-                Credentials = new NetworkCredential(_configuration.GetValue<string>("SMTP:EmailCred"), _configuration.GetValue<string>("SMTP:PasswordCred")),
+                Credentials = new NetworkCredential(_configuration.GetValue<string>("SMTP:EntryCredEmail"), _configuration.GetValue<string>("SMTP:EntryCredPassword")),
                 EnableSsl = true,
             };
 
@@ -35,7 +33,7 @@ namespace IdentityMicroService.Application.Services
                 client.Send(emailMessage);
                 return true;
             }
-            catch (Exception){}
+            catch (Exception) { }
             return false;
         }
     }

@@ -4,7 +4,6 @@ using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Infrastructure;
 using IdentityMicroService.Presentation.IdentityConfiguration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 

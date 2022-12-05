@@ -51,19 +51,18 @@ namespace IdentityMicroService.Application.Services
             return (tokenResponse.AccessToken, tokenResponse.RefreshToken);
         }
 
-
         public async Task<Account> ReturnUserIfValidAsync(UserModelForAuthorizationDTO userForAuthentication)
         {
             var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
-
-            if (user != null)
+            if (user == null)
             {
-                var res = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
+                return null;
+            }
 
-                if (res.Succeeded)
-                {
-                    return user;
-                }
+            var res = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
+            if (res.Succeeded)
+            {
+                return user;
             }
             return null;
         }
@@ -76,19 +75,23 @@ namespace IdentityMicroService.Application.Services
         public async Task<Account> CreateUserAsync(RegistrationUserDTO model)
         {
             var result = await _userManager.CreateAsync(new Account { Email = model.Email, UserName = model.Email }, model.Password);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    var res = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-
-                    if (res.Succeeded)
-                    {
-                        return user;
-                    }
-                }
+                return null;
             }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var res = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+            if (res.Succeeded)
+            {
+                return user;
+            }
+
             return null;
         }
 
@@ -131,34 +134,41 @@ namespace IdentityMicroService.Application.Services
         public async Task<bool> SendEmailConfirmAsync(RegistrationUserDTO model, IUrlHelper url)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if(user != null)
+            if (user != null)
             {
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                if (token != null)
-                {
-                    var confirmationLink = url.Action("ConfirmEmail", "Auth", new { token, email = model.Email }, "https");
-                    if (confirmationLink != null)
-                    {
-                        bool emailResponse = _emailService.SendEmail(model.Email, confirmationLink);
-                        return emailResponse;
-                    }
-                }
+                return false;
             }
-            return false;
 
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            if (token == null)
+            {
+                return false;
+            }
+
+            var confirmationLink = url.Action(NameOfMethods.AuthActionConfirmEmail, NameOfMethods.AuthControllerName, new { token, email = model.Email }, PathConfiguration.HTTPS);
+            if (confirmationLink == null)
+            {
+                return false;
+            }
+
+            bool emailResponse = _emailService.SendEmail(model.Email, confirmationLink);
+            return emailResponse;
         }
 
         public async Task<bool> ConfirmEmailAsync(string email, string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if(user != null)
+            if (user == null)
             {
-                var result = await _userManager.ConfirmEmailAsync(user, token);
-                if(result.Succeeded)
-                {
-                    return true;
-                }
+                return false;
             }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
             return false;
         }
 
@@ -166,6 +176,6 @@ namespace IdentityMicroService.Application.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
             return user != null;
-        } 
+        }
     }
 }

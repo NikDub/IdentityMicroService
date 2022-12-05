@@ -34,19 +34,19 @@ namespace IdentityMicroService.Presentation.Controllers
 
             var user = await _authenticationService.ReturnUserIfValidAsync(model);
 
-            if (user != null)
+            if (user == null)
             {
-                var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+                ModelState.AddModelError("", "Either an email or a password is incorrect");
 
-                if (model.ReturnUrl.IsNullOrEmpty())
-                    return RedirectToAction(nameof(Index)); //TODO
-                else
-                    return Redirect(model.ReturnUrl);
+                return View();
             }
 
-            ModelState.AddModelError("", "Either an email or a password is incorrect");
+            var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
-            return View();
+            if (model.ReturnUrl.IsNullOrEmpty())
+                return RedirectToAction(nameof(Index)); //TODO
+            else
+                return Redirect(model.ReturnUrl);
         }
 
         [HttpGet]
@@ -71,26 +71,27 @@ namespace IdentityMicroService.Presentation.Controllers
 
             var result = await _authenticationService.CreatePatientAsync(model);
 
-            if (result)
+            if (!result)
             {
-                var emailResult = await _authenticationService.SendEmailConfirmAsync(model, Url);
-                var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
-
-                if (!emailResult)
-                {
-                    return BadRequest(model.ReturnUrl);
-                }
-
-                if (model.ReturnUrl.IsNullOrEmpty())
-                    return RedirectToAction(nameof(Index)); //TODO
-                else
-                    return Redirect(model.ReturnUrl);
+                return View();
             }
-            return View();
+
+            var emailResult = await _authenticationService.SendEmailConfirmAsync(model, Url);
+            var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+
+            if (!emailResult)
+            {
+                return BadRequest(model.ReturnUrl);
+            }
+
+            if (model.ReturnUrl.IsNullOrEmpty())
+                return RedirectToAction(nameof(Index)); //TODO
+            else
+                return Redirect(model.ReturnUrl);
         }
 
         [Authorize(Roles = nameof(UserRole.Receptionist))]
-        [HttpPut("/{userId}")]
+        [HttpPut("{userId}")]
         public async Task<IActionResult> ChangeRole(string userId, RoleDTO model)
         {
             var user = await _authenticationService.GetUserById(userId);
