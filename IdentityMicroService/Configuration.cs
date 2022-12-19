@@ -9,7 +9,16 @@ namespace IdentityMicroService
         internal static IEnumerable<ApiResource> GetApiResources() =>
             new List<ApiResource>
             {
-                new ApiResource(PathConfiguration.TestApiScope)
+                //new ApiResource(PathConfiguration.TestApiScope),
+                new ApiResource
+                {
+                    Name= PathConfiguration.TestApiScope,
+                    DisplayName= PathConfiguration.TestApiScope,
+                    Scopes = new List<string>
+                    {
+                        PathConfiguration.TestApiScope
+                    }
+                }
             };
 
         internal static IEnumerable<ApiScope> GetApiScopes() =>
