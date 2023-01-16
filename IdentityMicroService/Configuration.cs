@@ -2,46 +2,63 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 
-namespace IdentityMicroService
+namespace IdentityMicroService;
+
+public static class Configuration
 {
-    public static class Configuration
+    internal static IEnumerable<ApiResource> GetApiResources()
     {
-        internal static IEnumerable<ApiResource> GetApiResources() =>
-            new List<ApiResource>
+        return new List<ApiResource>
+        {
+            new()
             {
-                new ApiResource(PathConfiguration.TestApiScope)
-            };
-
-        internal static IEnumerable<ApiScope> GetApiScopes() =>
-            new List<ApiScope>
-            {
-                new ApiScope(PathConfiguration.TestApiScope)
-            };
-
-        internal static IEnumerable<Client> GetClients() =>
-            new List<Client> {
-                new Client
+                Name = PathConfiguration.TestApiScope,
+                DisplayName = PathConfiguration.TestApiScope,
+                Scopes = new List<string>
                 {
-                    ClientId = PathConfiguration.ClientId,
-                    AllowAccessTokensViaBrowser = true,
-                    AlwaysIncludeUserClaimsInIdToken = true,
-                    AllowedGrantTypes = { PathConfiguration.ResourceOwnerEmailPassword, GrantType.ResourceOwnerPassword},
-                    RequireClientSecret = false,
-                    AllowOfflineAccess = true,
-                    AllowedScopes =
-                    {
-                        PathConfiguration.TestApiScope,
-                        IdentityServerConstants.StandardScopes.OpenId,
-                    },
+                    PathConfiguration.TestApiScope
                 }
-            };
+            }
+        };
+    }
 
-        internal static IEnumerable<IdentityResource> GetIdentityResources() =>
-            new List<IdentityResource>
+    internal static IEnumerable<ApiScope> GetApiScopes()
+    {
+        return new List<ApiScope>
+        {
+            new(PathConfiguration.TestApiScope)
+        };
+    }
+
+    internal static IEnumerable<Client> GetClients()
+    {
+        return new List<Client>
+        {
+            new()
             {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResources.Email(),
-            };
+                ClientId = PathConfiguration.ClientId,
+                AllowAccessTokensViaBrowser = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowedGrantTypes = { PathConfiguration.ResourceOwnerEmailPassword, GrantType.ResourceOwnerPassword },
+                RequireClientSecret = false,
+                AllowOfflineAccess = true,
+                AllowedScopes =
+                {
+                    PathConfiguration.TestApiScope,
+                    IdentityServerConstants.StandardScopes.OpenId
+                },
+                AccessTokenLifetime = 36000
+            }
+        };
+    }
+
+    internal static IEnumerable<IdentityResource> GetIdentityResources()
+    {
+        return new List<IdentityResource>
+        {
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+            new IdentityResources.Email()
+        };
     }
 }

@@ -1,9 +1,8 @@
-﻿namespace IdentityMicroService.Domain.Entities.Enums
+﻿namespace IdentityMicroService.Domain.Entities.Enums;
+
+public enum UserRole
 {
-    public enum UserRole
-    {
-        Receptionist,
-        Doctor,
-        Patient
-    }
+    Receptionist,
+    Doctor,
+    Patient
 }

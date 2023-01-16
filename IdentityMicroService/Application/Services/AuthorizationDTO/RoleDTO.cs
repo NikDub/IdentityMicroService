@@ -1,7 +1,6 @@
-﻿namespace IdentityMicroService.Application.Services.AuthorizationDTO
+﻿namespace IdentityMicroService.Application.Services.AuthorizationDTO;
+
+public class RoleDto
 {
-    public class RoleDTO
-    {
-        public string Role { get; set; }
-    }
+    public string Role { get; set; }
 }

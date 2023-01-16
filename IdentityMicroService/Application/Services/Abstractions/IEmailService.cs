@@ -1,7 +1,6 @@
-﻿namespace IdentityMicroService.Application.Services.Abstractions
+﻿namespace IdentityMicroService.Application.Services.Abstractions;
+
+public interface IEmailService
 {
-    public interface IEmailService
-    {
-        bool SendEmail(string email, string message);
-    }
+    bool SendEmail(string email, string message);
 }

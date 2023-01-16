@@ -1,7 +1,7 @@
-﻿@model IdentityMicroService.Domain.Entities.Models.AuthorizationDTO.RegistrationUserDTO
+﻿@model IdentityMicroService.Application.Services.AuthorizationDTO.RegistrationUserDto
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
 
 <script>
     $(document).ready(function () {
@@ -115,16 +115,14 @@
         border-width: 3px;
     }
 
-    .errorText {
-        color: red;
-    }
+    .errorText { color: red; }
 </style>
 
 <h1>Sing Up</h1>
 
 <form asp-controller="Auth" asp-action="SignUp" method="post">
 
-    <input hidden asp-for="ReturnUrl" />
+    <input hidden asp-for="ReturnUrl"/>
     <div>
         <label asp-for="Email">Email</label>
         <input asp-for="Email" required id="email">
@@ -144,7 +142,7 @@
 
     <p>
         <button type="submit" id="submitButton">Sing Up</button>
-        <a href="/Auth/Login?returnUrl=@Html.ValueFor(m=>m.ReturnUrl)">
+        <a href="/Auth/Login?returnUrl=@Html.ValueFor(m => m.ReturnUrl)">
             <button type="button">Login</button>
         </a>
     </p>
