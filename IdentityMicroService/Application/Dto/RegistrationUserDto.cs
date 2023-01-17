@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IdentityMicroService.Application.Services.AuthorizationDTO;
+namespace IdentityMicroService.Application.Dto;
 
 public class RegistrationUserDto : UserModelForAuthorizationDto
 {

@@ -79,6 +79,7 @@ public static class ServiceExtensions
     {
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IAccountService, AccountService>();
 
         services.Configure<RazorViewEngineOptions>(o =>
         {

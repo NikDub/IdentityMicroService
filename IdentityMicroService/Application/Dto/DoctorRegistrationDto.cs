@@ -1,4 +1,4 @@
-﻿namespace IdentityMicroService.Application.Services.AuthorizationDTO;
+﻿namespace IdentityMicroService.Application.Dto;
 
 public class DoctorRegistrationDto
 {

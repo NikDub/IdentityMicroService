@@ -1,5 +1,5 @@
-﻿using IdentityMicroService.Application.Services.Abstractions;
-using IdentityMicroService.Application.Services.AuthorizationDTO;
+﻿using IdentityMicroService.Application.Dto;
+using IdentityMicroService.Application.Services.Abstractions;
 using IdentityMicroService.Domain.Entities.Enums;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,10 +12,14 @@ namespace IdentityMicroService.Presentation.Controllers;
 public class AuthController : Controller
 {
     private readonly IAuthenticationService _authenticationService;
+    private readonly IAccountService _accountService;
+    private readonly IEmailService _emailService;
 
-    public AuthController(IAuthenticationService authenticationService)
+    public AuthController(IAuthenticationService authenticationService, IAccountService accountService, IEmailService emailService)
     {
         _authenticationService = authenticationService;
+        _accountService = accountService;
+        _emailService = emailService;
     }
 
     [HttpGet]
@@ -56,17 +60,17 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return View();
 
-        if (await _authenticationService.CheckExistsEmail(model.Email))
+        if (await _emailService.CheckExistsEmail(model.Email))
         {
             ModelState.AddModelError("Email", "This email is already in use");
             return View();
         }
 
-        var result = await _authenticationService.CreatePatientAsync(model);
+        var result = await _accountService.CreatePatientAsync(model);
 
         if (!result) return View();
 
-        var emailResult = await _authenticationService.SendEmailConfirmAsync(model, Url);
+        var emailResult = await _emailService.SendEmailConfirmAsync(model, Url);
         var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
         if (!emailResult) return BadRequest(model.ReturnUrl);
@@ -100,14 +104,14 @@ public class AuthController : Controller
     [HttpGet]
     public async Task<IActionResult> ConfirmEmail(string token, string email)
     {
-        var result = await _authenticationService.ConfirmEmailAsync(email, token);
+        var result = await _emailService.ConfirmEmailAsync(email, token);
         return View(result ? "SuccessConfirmEmail " : "FailureConfirmEmail");
     }
 
     [HttpGet]
     public async Task<IActionResult> IsEmailExists(string email)
     {
-        return Json(await _authenticationService.CheckExistsEmail(email));
+        return Json(await _emailService.CheckExistsEmail(email));
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = nameof(UserRole.Receptionist))]
@@ -116,17 +120,17 @@ public class AuthController : Controller
     {
         if (!ModelState.IsValid) return BadRequest("Model is wrong.");
 
-        if (await _authenticationService.CheckExistsEmail(model.Email))
+        if (await _emailService.CheckExistsEmail(model.Email))
         {
             ModelState.AddModelError("Email", "This email is already in use.");
             return BadRequest("Model is wrong.");
         }
 
-        var result = await _authenticationService.CreateDoctorAsync(model);
+        var result = await _accountService.CreateDoctorAsync(model);
 
         if (result == null) return BadRequest("Something went wrong.");
 
-        var emailResult = await _authenticationService.SendEmailConfirmForDoctorAsync(result, Url);
+        var emailResult = await _emailService.SendEmailConfirmForDoctorAsync(result, Url);
         if (!emailResult)
             return BadRequest("The email was not sent.");
 
@@ -137,7 +141,7 @@ public class AuthController : Controller
     [HttpPut("{id}")]
     public async Task<IActionResult> PhotoChange(string id, [FromBody] string photoId)
     {
-        await _authenticationService.ChangePhotoAsync(id, photoId);
+        await _accountService.ChangePhotoAsync(id, photoId);
         return NoContent();
     }
 }
