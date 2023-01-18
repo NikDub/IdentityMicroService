@@ -1,33 +1,32 @@
 using IdentityMicroService.Presentation.Extensions;
 
-namespace IdentityMicroService
+namespace IdentityMicroService;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.ConfigureDbConnection(builder.Configuration);
-            builder.Services.ConfigureAuthentication();
-            builder.Services.ConfigureServices();
+        builder.Services.ConfigureDbConnection(builder.Configuration);
+        builder.Services.ConfigureJwtAuthentication(builder.Configuration);
+        builder.Services.ConfigureAuthentication();
+        builder.Services.ConfigureServices();
 
-            builder.Services.AddControllersWithViews()
-                .AddRazorRuntimeCompilation();
-            builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddControllersWithViews()
+            .AddRazorRuntimeCompilation();
+        builder.Services.AddEndpointsApiExplorer();
 
-            var app = builder.Build();
+        var app = builder.Build();
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseIdentityServer();
+        app.UseHttpsRedirection();
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseIdentityServer();
 
-            app.UseCookiePolicy();
-            app.MapControllers();
+        app.MapControllers();
 
-            app.Run();
-        }
+        app.Run();
     }
 }

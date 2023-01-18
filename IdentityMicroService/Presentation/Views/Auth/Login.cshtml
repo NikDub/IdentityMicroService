@@ -1,32 +1,29 @@
-﻿@model IdentityMicroService.Domain.Entities.Models.AuthorizationDTO.UserModelForAuthorizationDTO
+﻿@model IdentityMicroService.Application.Dto.UserModelForAuthorizationDto
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
 
 <style>
     .btn {
-        border: 1px solid #7c7474;
         background-color: buttonface;
-        color: buttontext;
-        padding: 1px 5px;
-        text-decoration: auto;
+        border: 1px solid #7c7474;
+        -ms-border-radius: 2px;
         border-radius: 2px;
+        color: buttontext;
         cursor: default;
         font-size: 15px;
+        padding: 1px 5px;
+        text-decoration: auto;
     }
 
-        .btn:hover {
-            background-color: #d9d9d9;
-        }
+    .btn:hover { background-color: #d9d9d9; }
 
     .errorBorder {
         border-color: red;
         border-width: 3px;
     }
 
-    .errorText {
-        color: red;
-    }
+    .errorText { color: red; }
 </style>
 <script>
     $(document).ready(function () {
@@ -118,18 +115,18 @@
 {
     @Html.HiddenFor(e => e.ReturnUrl)
     <div>
-        @Html.LabelFor(e=>e.Email, "Email")
-        @Html.TextBoxFor(e=>e.Email)
-        @Html.ValidationMessageFor(e=>e.Email, "", new{id = "emailSpan"})
+        @Html.LabelFor(e => e.Email, "Email")
+        @Html.TextBoxFor(e => e.Email)
+        @Html.ValidationMessageFor(e => e.Email, "", new { id = "emailSpan" })
     </div>
     <div>
-        @Html.LabelFor(e=>e.Password, "Password")
-        @Html.TextBoxFor(e=>e.Password, "", new{ type = "password"})
+        @Html.LabelFor(e => e.Password, "Password")
+        @Html.TextBoxFor(e => e.Password, "", new { type = "password" })
         <span toggle="#password-field" class="fa fa-fw fa-eye field_icon toggle-password"></span>
-        @Html.ValidationMessageFor(e=>e.Password, "", new{id = "passwordSpan"})
+        @Html.ValidationMessageFor(e => e.Password, "", new { id = "passwordSpan" })
     </div>
     <p>
-        @Html.TextBox("submitButton", "Login", new {type="submit"})
-        @Html.ActionLink("Sign Up", "SignUp", "Auth", new { ReturnUrl = @Html.ValueFor(m=>m.ReturnUrl)}, new { id = "signup", @class="btn", click=""})
+        @Html.TextBox("submitButton", "Login", new { type = "submit" })
+        @Html.ActionLink("Sign Up", "SignUp", "Auth", new { ReturnUrl = Html.ValueFor(m => m.ReturnUrl) }, new { id = "signup", @class = "btn", click = "" })
     </p>
 }

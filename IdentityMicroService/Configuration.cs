@@ -2,55 +2,63 @@
 using IdentityServer4;
 using IdentityServer4.Models;
 
-namespace IdentityMicroService
+namespace IdentityMicroService;
+
+public static class Configuration
 {
-    public static class Configuration
+    internal static IEnumerable<ApiResource> GetApiResources()
     {
-        internal static IEnumerable<ApiResource> GetApiResources() =>
-            new List<ApiResource>
+        return new List<ApiResource>
+        {
+            new()
             {
-                //new ApiResource(PathConfiguration.TestApiScope),
-                new ApiResource
+                Name = PathConfiguration.TestApiScope,
+                DisplayName = PathConfiguration.TestApiScope,
+                Scopes = new List<string>
                 {
-                    Name= PathConfiguration.TestApiScope,
-                    DisplayName= PathConfiguration.TestApiScope,
-                    Scopes = new List<string>
-                    {
-                        PathConfiguration.TestApiScope
-                    }
+                    PathConfiguration.TestApiScope
                 }
-            };
+            }
+        };
+    }
 
-        internal static IEnumerable<ApiScope> GetApiScopes() =>
-            new List<ApiScope>
+    internal static IEnumerable<ApiScope> GetApiScopes()
+    {
+        return new List<ApiScope>
+        {
+            new(PathConfiguration.TestApiScope)
+        };
+    }
+
+    internal static IEnumerable<Client> GetClients()
+    {
+        return new List<Client>
+        {
+            new()
             {
-                new ApiScope(PathConfiguration.TestApiScope)
-            };
-
-        internal static IEnumerable<Client> GetClients() =>
-            new List<Client> {
-                new Client
+                ClientId = PathConfiguration.ClientId,
+                AllowAccessTokensViaBrowser = true,
+                AlwaysIncludeUserClaimsInIdToken = true,
+                AllowedGrantTypes = { PathConfiguration.ResourceOwnerEmailPassword, GrantType.ResourceOwnerPassword },
+                RequireClientSecret = false,
+                AllowOfflineAccess = true,
+                AllowedScopes =
                 {
-                    ClientId = PathConfiguration.ClientId,
-                    AllowAccessTokensViaBrowser = true,
-                    AlwaysIncludeUserClaimsInIdToken = true,
-                    AllowedGrantTypes = { PathConfiguration.ResourceOwnerEmailPassword, GrantType.ResourceOwnerPassword},
-                    RequireClientSecret = false,
-                    AllowOfflineAccess = true,
-                    AllowedScopes =
-                    {
-                        PathConfiguration.TestApiScope,
-                        IdentityServerConstants.StandardScopes.OpenId,
-                    },
-                }
-            };
+                    PathConfiguration.TestApiScope,
+                    IdentityServerConstants.StandardScopes.OpenId
+                },
+                AccessTokenLifetime = 36000
+            }
+        };
+    }
 
-        internal static IEnumerable<IdentityResource> GetIdentityResources() =>
-            new List<IdentityResource>
-            {
-                new IdentityResources.OpenId(),
-                new IdentityResources.Profile(),
-                new IdentityResources.Email(),
-            };
+    internal static IEnumerable<IdentityResource> GetIdentityResources()
+    {
+        return new List<IdentityResource>
+        {
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile(),
+            new IdentityResources.Email()
+        };
     }
 }

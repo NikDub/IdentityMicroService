@@ -1,38 +1,40 @@
-﻿using IdentityMicroService.Domain.Entities.Models;
+﻿using System.Security.Claims;
+using IdentityMicroService.Domain.Entities.Models;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 
-namespace IdentityMicroService.Presentation.IdentityConfiguration
+namespace IdentityMicroService.Presentation.IdentityConfiguration;
+
+public class ProfileService : IProfileService
 {
-    public class ProfileService : IProfileService
+    private readonly UserManager<Account> _userManager;
+
+    public ProfileService(UserManager<Account> userManager)
     {
-        private UserManager<Account> _userManager;
+        _userManager = userManager;
+    }
 
-        public ProfileService(UserManager<Account> userManager)
+    public async Task GetProfileDataAsync(ProfileDataRequestContext context)
+    {
+        var user = await _userManager.GetUserAsync(context.Subject);
+        if (user != null)
         {
-            _userManager = userManager;
-        }
-
-        public async Task GetProfileDataAsync(ProfileDataRequestContext context)
-        {
-            var user = await _userManager.GetUserAsync(context.Subject);
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
-                new Claim("roles", userRoles.FirstOrDefault())
+                new("roles", userRoles.FirstOrDefault() ?? string.Empty)
             };
 
             context.IssuedClaims.AddRange(claims);
         }
+    }
 
-        public async Task IsActiveAsync(IsActiveContext context)
-        {
-            var user = await _userManager.GetUserAsync(context.Subject);
+    public async Task IsActiveAsync(IsActiveContext context)
+    {
+        var user = await _userManager.GetUserAsync(context.Subject);
 
-            context.IsActive = (user != null);
-        }
+        context.IsActive = user != null;
     }
 }
