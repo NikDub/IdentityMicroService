@@ -86,7 +86,7 @@ namespace IdentityMicroService.Application.Services
 
             return null;
         }
-        public async Task ChangePhotoAsync(string userId, string photoId)
+        public async Task ChangePhotoAsync(Guid userId, Guid photoId)
         {
             var user = await _authenticationService.GetUserById(userId);
             user.PhotoId = photoId;

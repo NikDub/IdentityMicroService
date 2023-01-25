@@ -82,7 +82,7 @@ public class AuthController : Controller
 
     [Authorize(Roles = nameof(UserRole.Receptionist))]
     [HttpPut("{userId}")]
-    public async Task<IActionResult> ChangeRole(string userId, RoleDto model)
+    public async Task<IActionResult> ChangeRole(Guid userId, RoleDto model)
     {
         var user = await _authenticationService.GetUserById(userId);
         if (Enum.TryParse(model.Role, out UserRole roleEnum) && user != null)
@@ -139,7 +139,7 @@ public class AuthController : Controller
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = nameof(UserRole.Patient))]
     [HttpPut("{id}")]
-    public async Task<IActionResult> PhotoChange(string id, [FromBody] string photoId)
+    public async Task<IActionResult> PhotoChange(Guid id, [FromBody] Guid photoId)
     {
         await _accountService.ChangePhotoAsync(id, photoId);
         return NoContent();

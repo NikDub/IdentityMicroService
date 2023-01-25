@@ -79,8 +79,8 @@ public class AuthenticationService : IAuthenticationService
 
         await _userManager.AddToRoleAsync(user, role.ToString());
     }
-    public async Task<Account> GetUserById(string userId)
+    public async Task<Account> GetUserById(Guid userId)
     {
-        return await _userManager.FindByIdAsync(userId);
+        return await _userManager.FindByIdAsync(userId.ToString());
     }
 }

@@ -11,13 +11,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityMicroService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -57,13 +57,13 @@ namespace IdentityMicroService.Migrations
                         },
                         new
                         {
-                            Id = "4622e72d-f609-4964-b19d-4ce611cbc71a",
+                            Id = "00e2e714-9af9-4671-93ba-096afa0fd2c0",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = "46d81a0b-9489-41d1-927c-249ffab0caba",
+                            Id = "b96e2a77-e8b1-4cae-84e2-bca4dcd828a7",
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         });
@@ -265,8 +265,8 @@ namespace IdentityMicroService.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhotoId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -281,19 +281,20 @@ namespace IdentityMicroService.Migrations
                         {
                             Id = "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "39d0d5b0-58c0-4a19-8e48-979f0d53f22c",
+                            ConcurrencyStamp = "3694d182-1cbe-42e9-b429-397ec3d687f1",
                             Email = "username@username.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "USERNAME@USERNAME.COM",
                             NormalizedUserName = "USERNAME",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDPjTxLDF0B9wyIyyDV6lzmEyCIhVXUQzosO5vxeS0VUJyt3366iFncCwE9trPFgQg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM13NPccpTUNGu2QCAgP71cyGg2oYfb5CYmeKpOapcRhsvRCrZ6JNz1TGFPF57j1BA==",
                             PhoneNumber = "XXXXXXXXXXXXX",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "00000000-0000-0000-0000-000000000000",
                             TwoFactorEnabled = false,
                             UserName = "username",
-                            CreatedAt = new DateTime(2023, 1, 10, 8, 35, 20, 914, DateTimeKind.Utc).AddTicks(8339),
+                            CreatedAt = new DateTime(2023, 1, 24, 12, 13, 28, 833, DateTimeKind.Utc).AddTicks(3645),
+                            PhotoId = new Guid("00000000-0000-0000-0000-000000000000"),
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
