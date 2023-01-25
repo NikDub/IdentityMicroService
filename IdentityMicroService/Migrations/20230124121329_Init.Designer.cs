@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityMicroService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221125190615_initial")]
-    partial class Initial
+    [Migration("20230124121329_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.0")
+                .HasAnnotation("ProductVersion", "7.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -60,13 +60,13 @@ namespace IdentityMicroService.Migrations
                         },
                         new
                         {
-                            Id = "d3124d4b-0b36-4972-bfb0-e6b196c170a8",
+                            Id = "00e2e714-9af9-4671-93ba-096afa0fd2c0",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = "6cb8651b-2e27-4b3a-b47e-8b33eddc9705",
+                            Id = "b96e2a77-e8b1-4cae-84e2-bca4dcd828a7",
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         });
@@ -265,17 +265,17 @@ namespace IdentityMicroService.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CreatedBy")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhotoId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("PhotoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("UpdatedBy")
-                        .HasColumnType("int");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Account");
 
@@ -284,20 +284,20 @@ namespace IdentityMicroService.Migrations
                         {
                             Id = "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8d900c1d-91c9-4f37-90d9-a2de11c63ccd",
+                            ConcurrencyStamp = "3694d182-1cbe-42e9-b429-397ec3d687f1",
                             Email = "username@username.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "USERNAME@USERNAME.COM",
                             NormalizedUserName = "USERNAME",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJq15/54PDvaLSxG76nvcPHmriYg+AYAdHmybU45dLwtDAUymIpXb2Ebwurpq+WcRg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM13NPccpTUNGu2QCAgP71cyGg2oYfb5CYmeKpOapcRhsvRCrZ6JNz1TGFPF57j1BA==",
                             PhoneNumber = "XXXXXXXXXXXXX",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "00000000-0000-0000-0000-000000000000",
                             TwoFactorEnabled = false,
                             UserName = "username",
-                            CreatedAt = new DateTime(2022, 11, 25, 19, 6, 14, 807, DateTimeKind.Utc).AddTicks(4763),
-                            PhotoId = 0,
+                            CreatedAt = new DateTime(2023, 1, 24, 12, 13, 28, 833, DateTimeKind.Utc).AddTicks(3645),
+                            PhotoId = new Guid("00000000-0000-0000-0000-000000000000"),
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });

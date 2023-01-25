@@ -10,6 +10,6 @@ public interface IAuthenticationService
     Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDto userForAuthentication);
     Task AddUserRoleAsync(Account user, UserRole role);
     Task SignOutAsync();
-    Task<Account> GetUserById(string userId);
+    Task<Account> GetUserById(Guid userId);
     Task<Account> CreateUserAsync(RegistrationUserDto model);
 }

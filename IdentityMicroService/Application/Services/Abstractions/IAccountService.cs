@@ -7,7 +7,7 @@ namespace IdentityMicroService.Application.Services.Abstractions
     {
         Task<bool> CreatePatientAsync(RegistrationUserDto model);
         Task<Account> CreateDoctorAsync(DoctorRegistrationDto model);
-        Task ChangePhotoAsync(string userId, string photoId);
+        Task ChangePhotoAsync(Guid userId, Guid photoId);
 
     }
 }

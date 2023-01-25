@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace IdentityMicroService.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,11 +33,11 @@ namespace IdentityMicroService.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PhotoId = table.Column<int>(type: "int", nullable: true),
+                    PhotoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<int>(type: "int", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<int>(type: "int", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -168,15 +169,15 @@ namespace IdentityMicroService.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "6cb8651b-2e27-4b3a-b47e-8b33eddc9705", null, "Patient", "PATIENT" },
+                    { "00e2e714-9af9-4671-93ba-096afa0fd2c0", null, "Doctor", "DOCTOR" },
                     { "8d734af4-145b-4778-b320-14effafc96b3", null, "Receptionist", "RECEPTIONIST" },
-                    { "d3124d4b-0b36-4972-bfb0-e6b196c170a8", null, "Doctor", "DOCTOR" }
+                    { "b96e2a77-e8b1-4cae-84e2-bca4dcd828a7", null, "Patient", "PATIENT" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "CreatedBy", "Discriminator", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "PhotoId", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UpdatedBy", "UserName" },
-                values: new object[] { "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68", 0, "8d900c1d-91c9-4f37-90d9-a2de11c63ccd", new DateTime(2022, 11, 25, 19, 6, 14, 807, DateTimeKind.Utc).AddTicks(4763), null, "Account", "username@username.com", false, false, null, "USERNAME@USERNAME.COM", "USERNAME", "AQAAAAIAAYagAAAAEJq15/54PDvaLSxG76nvcPHmriYg+AYAdHmybU45dLwtDAUymIpXb2Ebwurpq+WcRg==", "XXXXXXXXXXXXX", false, 0, "00000000-0000-0000-0000-000000000000", false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "username" });
+                values: new object[] { "77619ae5-1ac9-4ee1-84aa-cc32dab2bb68", 0, "3694d182-1cbe-42e9-b429-397ec3d687f1", new DateTime(2023, 1, 24, 12, 13, 28, 833, DateTimeKind.Utc).AddTicks(3645), null, "Account", "username@username.com", false, false, null, "USERNAME@USERNAME.COM", "USERNAME", "AQAAAAIAAYagAAAAEM13NPccpTUNGu2QCAgP71cyGg2oYfb5CYmeKpOapcRhsvRCrZ6JNz1TGFPF57j1BA==", "XXXXXXXXXXXXX", false, new Guid("00000000-0000-0000-0000-000000000000"), "00000000-0000-0000-0000-000000000000", false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, "username" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
