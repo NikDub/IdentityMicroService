@@ -4,6 +4,7 @@ using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Presentation.Extensions;
 using IdentityServer4;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityMicroService.Application.Services;
@@ -45,15 +46,17 @@ public class AuthenticationService : IAuthenticationService
         return (tokenResponse.AccessToken, tokenResponse.RefreshToken);
     }
 
-    public async Task<Account> ReturnUserIfValidAsync(UserModelForAuthorizationDto userForAuthentication)
+    public async Task<Account> IsUserExistsAsync(UserModelForAuthorizationDto userForAuthentication)
     {
-        var user = await _userManager.FindByEmailAsync(userForAuthentication.Email);
-        if (user == null) return null;
-
-        var res = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
-        if (res.Succeeded) return user;
-        return null;
+        return await _userManager.FindByEmailAsync(userForAuthentication.Email);
     }
+
+    public async Task<bool> UserSingInAsync(Account user, UserModelForAuthorizationDto userForAuthentication)
+    {
+        var res = await _signInManager.PasswordSignInAsync(user, userForAuthentication.Password, false, false);
+        return res.Succeeded;
+    }
+
     public async Task SignOutAsync()
     {
         await _signInManager.SignOutAsync();
@@ -64,13 +67,7 @@ public class AuthenticationService : IAuthenticationService
             model.Password);
         if (!result.Succeeded) return null;
 
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null) return null;
-
-        var res = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-        if (res.Succeeded) return user;
-
-        return null;
+        return await _userManager.FindByEmailAsync(model.Email);
     }
     public async Task AddUserRoleAsync(Account user, UserRole role)
     {

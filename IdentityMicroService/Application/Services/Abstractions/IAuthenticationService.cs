@@ -6,7 +6,8 @@ namespace IdentityMicroService.Application.Services.Abstractions;
 
 public interface IAuthenticationService
 {
-    Task<Account> ReturnUserIfValidAsync(UserModelForAuthorizationDto userForAuthentication);
+    Task<Account> IsUserExistsAsync(UserModelForAuthorizationDto userForAuthentication);
+    Task<bool> UserSingInAsync(Account user, UserModelForAuthorizationDto userForAuthentication);
     Task<(string accessToken, string refreshToken)> GetTokensAsync(UserModelForAuthorizationDto userForAuthentication);
     Task AddUserRoleAsync(Account user, UserRole role);
     Task SignOutAsync();

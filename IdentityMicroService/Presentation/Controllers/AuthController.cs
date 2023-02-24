@@ -1,7 +1,6 @@
 ﻿using IdentityMicroService.Application.Dto;
 using IdentityMicroService.Application.Services.Abstractions;
 using IdentityMicroService.Domain.Entities.Enums;
-using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,62 +21,45 @@ public class AuthController : Controller
         _emailService = emailService;
     }
 
-    [HttpGet]
-    public IActionResult Login(string returnUrl)
-    {
-        return View(new UserModelForAuthorizationDto { ReturnUrl = returnUrl });
-    }
-
     [HttpPost]
-    public async Task<IActionResult> Login(UserModelForAuthorizationDto model)
+    public async Task<IActionResult> Login([FromBody] UserModelForAuthorizationDto model)
     {
-        if (!ModelState.IsValid) return View();
+        if (!ModelState.IsValid) return UnprocessableEntity();
 
-        var user = await _authenticationService.ReturnUserIfValidAsync(model);
-
+        var user = await _authenticationService.IsUserExistsAsync(model);
         if (user == null)
-        {
-            ModelState.AddModelError("", "Either an email or a password is incorrect");
+            return BadRequest("Either an email or a password is incorrect.");
 
-            return View();
-        }
+        if (!await _emailService.IsEmailConfirmedAsync(user))
+            return BadRequest("Your email has not been confirmed.");
+
+        if (!await _authenticationService.UserSingInAsync(user, model))
+            return BadRequest("Either an email or a password is incorrect.");
 
         var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
 
-        if (model.ReturnUrl.IsNullOrEmpty())
-            return Redirect("/");
-        return Redirect(model.ReturnUrl);
-    }
-
-    [HttpGet]
-    public IActionResult SignUp(string returnUrl)
-    {
-        return View(new RegistrationUserDto { ReturnUrl = returnUrl });
+        return Ok(new { accessToken, refreshToken });
     }
 
     [HttpPost]
-    public async Task<IActionResult> SignUp(RegistrationUserDto model)
+    public async Task<IActionResult> SignUp([FromBody] RegistrationUserDto model)
     {
-        if (!ModelState.IsValid) return View();
+        if (!ModelState.IsValid) return UnprocessableEntity();
 
         if (await _emailService.CheckExistsEmail(model.Email))
         {
-            ModelState.AddModelError("Email", "This email is already in use");
-            return View();
+            return BadRequest("This email is already in use.");
         }
 
         var result = await _accountService.CreatePatientAsync(model);
 
-        if (!result) return View();
+        if (!result) return BadRequest("Can't create user, try again later.");
 
-        var emailResult = await _emailService.SendEmailConfirmAsync(model, Url);
-        var (accessToken, refreshToken) = await _authenticationService.GetTokensAsync(model);
+        var emailResult = await _emailService.SendEmailConfirmAsync(model);
 
-        if (!emailResult) return BadRequest(model.ReturnUrl);
+        if (!emailResult) return BadRequest("Can't send mail in you email.");
 
-        if (model.ReturnUrl.IsNullOrEmpty())
-            return Redirect("/");
-        return Redirect(model.ReturnUrl);
+        return Ok();
     }
 
     [Authorize(Roles = nameof(UserRole.Receptionist))]
@@ -98,14 +80,14 @@ public class AuthController : Controller
     public async Task<IActionResult> SingOut()
     {
         await _authenticationService.SignOutAsync();
-        return Redirect("/");
+        return Ok();
     }
 
     [HttpGet]
-    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    public async Task<IActionResult> ConfirmEmail([FromQuery] string token, [FromQuery] string email)
     {
         var result = await _emailService.ConfirmEmailAsync(email, token);
-        return View(result ? "SuccessConfirmEmail " : "FailureConfirmEmail");
+        return result ? Ok() : BadRequest("Failure Confirm Email");
     }
 
     [HttpGet]
@@ -130,7 +112,7 @@ public class AuthController : Controller
 
         if (result == null) return BadRequest("Something went wrong.");
 
-        var emailResult = await _emailService.SendEmailConfirmForDoctorAsync(result, Url);
+        var emailResult = await _emailService.SendEmailConfirmForDoctorAsync(result);
         if (!emailResult)
             return BadRequest("The email was not sent.");
 
@@ -143,5 +125,11 @@ public class AuthController : Controller
     {
         await _accountService.ChangePhotoAsync(id, photoId);
         return NoContent();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Doctors()
+    {
+        return Ok(await _accountService.GetAccountsByRole(UserRole.Doctor));
     }
 }

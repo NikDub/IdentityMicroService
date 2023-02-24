@@ -16,9 +16,9 @@ public class Program
         builder.Services.AddControllersWithViews()
             .AddRazorRuntimeCompilation();
         builder.Services.AddEndpointsApiExplorer();
-
+        builder.Services.AddCors();
         var app = builder.Build();
-
+        app.UseCors(x => x.AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod());
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthentication();

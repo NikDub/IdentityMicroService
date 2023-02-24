@@ -4,6 +4,7 @@ using IdentityMicroService.Domain.Entities.Enums;
 using IdentityMicroService.Domain.Entities.Models;
 using IdentityMicroService.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityMicroService.Application.Services
 {
@@ -79,18 +80,24 @@ namespace IdentityMicroService.Application.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null) return null;
 
-
-            var res = await _signInManager.PasswordSignInAsync(user, password, false, false);
             user.PasswordHash = password;
-            if (res.Succeeded) return user;
-
-            return null;
+            return user;
         }
         public async Task ChangePhotoAsync(Guid userId, Guid photoId)
         {
             var user = await _authenticationService.GetUserById(userId);
             user.PhotoId = photoId;
             await _userManager.UpdateAsync(user);
+        }
+
+        public async Task<IEnumerable<AccountDto>> GetAccountsByRole(UserRole role)
+        {
+            var temp = await _dBContext.Accounts
+                .Join(_dBContext.UserRoles, a => a.Id, ur => ur.UserId, (a, ur) => new { a.Id, a.PhotoId, ur.RoleId })
+                .Join(_dBContext.Roles, a => a.RoleId, r => r.Id, (a, r) => new { a.Id, a.PhotoId, r.Name })
+                .Where(r => r.Name == role.ToString())
+                .Select(r => new AccountDto { Id = r.Id, PhotoId = r.PhotoId }).ToListAsync();
+            return temp;
         }
     }
 }

@@ -1,12 +1,11 @@
-﻿using System.Net;
-using System.Net.Mail;
-using IdentityMicroService.Application.Dto;
+﻿using IdentityMicroService.Application.Dto;
 using IdentityMicroService.Application.Services.Abstractions;
 using IdentityMicroService.Domain.Entities.Models;
-using IdentityMicroService.Presentation.Extensions;
 using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Net;
+using System.Net.Mail;
 
 namespace IdentityMicroService.Application.Services;
 
@@ -21,22 +20,27 @@ public class EmailService : IEmailService
         this._userManager = userManager;
     }
 
-    public async Task<bool> SendEmailConfirmAsync(RegistrationUserDto model, IUrlHelper url)
+    public async Task<bool> SendEmailConfirmAsync(RegistrationUserDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user != null) return false;
+        if (user == null) return false;
 
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         if (token.IsNullOrEmpty()) return false;
 
-        var confirmationLink = url.Action(NameOfMethods.AuthActionConfirmEmail, NameOfMethods.AuthControllerName,
-            new { token, email = model.Email }, PathConfiguration.Https);
+        var param = new Dictionary<string, string?>
+        {
+            {"token", token },
+            {"email", user.Email }
+        };
+        var confirmationLink = QueryHelpers.AddQueryString(_configuration.GetValue<string>("Client:URI") + _configuration.GetValue<string>("Client:EmailConfirmPath"), param);
         if (confirmationLink == null) return false;
 
         var emailResponse = SendEmail(model.Email, confirmationLink);
         return emailResponse;
     }
-    public async Task<bool> SendEmailConfirmForDoctorAsync(Account model, IUrlHelper url)
+
+    public async Task<bool> SendEmailConfirmForDoctorAsync(Account model)
     {
         if (model == null)
             return false;
@@ -47,8 +51,12 @@ public class EmailService : IEmailService
         var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         if (token.IsNullOrEmpty()) return false;
 
-        var confirmationLink = url.Action(NameOfMethods.AuthActionConfirmEmail, NameOfMethods.AuthControllerName,
-            new { token, email = model.Email }, PathConfiguration.Https);
+        var param = new Dictionary<string, string?>
+        {
+            {"token", token },
+            {"email", user.Email }
+        };
+        var confirmationLink = QueryHelpers.AddQueryString(_configuration.GetValue<string>("Client:URI") + _configuration.GetValue<string>("Client:EmailConfirmPath"), param);
         if (confirmationLink == null) return false;
 
         confirmationLink = $"Username: {model.UserName}\n" +
@@ -58,6 +66,7 @@ public class EmailService : IEmailService
         var emailResponse = SendEmail(model.Email, confirmationLink);
         return emailResponse;
     }
+
     public async Task<bool> ConfirmEmailAsync(string email, string token)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -100,5 +109,10 @@ public class EmailService : IEmailService
         {
             return false;
         }
+    }
+
+    public async Task<bool> IsEmailConfirmedAsync(Account user)
+    {
+        return await _userManager.IsEmailConfirmedAsync(user);
     }
 }
